@@ -79,6 +79,7 @@ def camper_by_id(id):
 #     except:
 #         return make_response({"errors"}, 400)
 
+# Api Method PATCH
 class CampersById(Resource):
     def patch(seld, id):
         camper = db.session.get(Camper, id)
@@ -113,6 +114,26 @@ def post_camper():
 
     except ValueError:
         return make_response({"errors": ["validation errors"]}, 400)
+
+# Api Method POST
+# class Campers(Resource):
+#     def post(self):
+#         data = request.get_json()
+
+#         try:
+#             new_camper = Camper(
+#                 name = request.json["name"],
+#                 age = request.json["age"]
+#             )
+#             # import ipdb; ipdb.set_trace()
+#             db.session.add(new_camper)
+#             db.session.commit()
+#             print(new_camper)
+
+#             return make_response(new_camper.to_dict(rules=("-signups",)), 201)
+#         except:
+#             return make_response({"errors": ["validation errors"]}, 400)
+# api.add_resource(Campers, "/campers")
 
 @app.post("/signups")
 def post_signups():

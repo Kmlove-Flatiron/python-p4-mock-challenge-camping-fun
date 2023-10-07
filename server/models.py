@@ -57,18 +57,18 @@ class Camper(db.Model, SerializerMixin):
 
     # Add validation
     @validates("name")
-    def validate_name(self, db_column, name):
-        if type(name) is str and len(name) > 0:
-            return name
-        else:
-            raise Exception("Name must be a string")
-
+    # def validate_name(self, db_column, name):
+    #     if type(name) is str and len(name) > 0:
+    #         return name
+    #     else:
+    #         raise Exception("Name must be a string")
+    #
     # Another way:        
-    # def validate_name(self, key, name):
-    #     if not name or len(name) < 1:
-    #         raise ValueError("Name must exists!!!")
+    def validate_name(self, key, name):
+        if not name or len(name) < 1:
+            raise ValueError("Name must exists!!!")
         
-    #     return name
+        return name
         
     @validates("age")
     def validate_age(self, db_column, age):
