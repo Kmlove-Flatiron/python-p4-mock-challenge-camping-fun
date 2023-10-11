@@ -25,8 +25,14 @@ class Activity(db.Model, SerializerMixin):
     difficulty = db.Column(db.Integer)
 
     # Add relationship
+    # If using back_populates, need the explicit relaitonship in BOTH parent and child
+    # signups = db.relationship("Signup", back_populates="activity", cascade="all, delete-orphan")
+    
+    # If using backref, only need the relationship in parent OR child class, not both. 
+    signups = db.relationship("Signup", backref="activity", cascade="all, delete-orphan")
     
     # Add serialization rules
+    serialize_rules = ("-signups.activity",)
     
     def __repr__(self):
         return f'<Activity {self.id}: {self.name}>'
@@ -40,11 +46,29 @@ class Camper(db.Model, SerializerMixin):
     age = db.Column(db.Integer)
 
     # Add relationship
+    # If using back_populates, need the explicit relaitonship in BOTH parent and child
+    # signups = db.relationship("Signup", back_populates="camper", cascade="all, delete-orphan")
+
+    # If using backref, only need the relationship in parent OR child class, not both. 
+    signups = db.relationship("Signup", backref="camper", cascade="all, delete-orphan")
     
     # Add serialization rules
-    
+    serialize_rules = ("-signups.camper",)
+
     # Add validation
-    
+    @validates("name", "age")
+    def validate_camper(self, key, value):
+        if key == "name":
+            if value and len(value) >= 1:
+                return value
+            else:
+                raise ValueError("Name must exist")
+            
+        elif key == "age":
+            if 8 <= value <= 18:
+                return value
+            else:
+                raise ValueError("Age must be between 8 and 18")
     
     def __repr__(self):
         return f'<Camper {self.id}: {self.name}>'
@@ -57,10 +81,25 @@ class Signup(db.Model, SerializerMixin):
     time = db.Column(db.Integer)
 
     # Add relationships
+    # Foreign Keys
+    camper_id = db.Column(db.Integer, db.ForeignKey("campers.id"))
+    activity_id = db.Column(db.Integer, db.ForeignKey("activities.id"))
+
+    # B/c I used back_populates eariler, need explicit relationship in child class
+    # If I used backref, would not need this realtionship
+    # camper = db.relationship("Camper", back_populates="signups")
+    # activity = db.relationship("Signup", back_populates="signups")
     
     # Add serialization rules
+    serialize_rules = ("-camper.signups", "-activity.signups")
     
     # Add validation
+    @validates("time")
+    def validate_time(self, key, value):
+        if 0 <= value <= 23:
+            return value
+        else:
+            raise ValueError("Time must be between 0 and 23")
     
     def __repr__(self):
         return f'<Signup {self.id}>'
